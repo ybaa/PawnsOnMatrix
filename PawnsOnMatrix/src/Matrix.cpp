@@ -30,7 +30,7 @@ void Matrix::DrawMatrix(int width, int height){
 	}
 	getch();
 
-	endwin();
+
 
 }
 
