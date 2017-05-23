@@ -4,6 +4,16 @@ class Pawn {
 public:
 	Pawn();
 	~Pawn();
-	void drawPawn(int,int);
 
+	int getCollumn();
+	int getRow();
+
+	void drawPawn(int,int);
+	void fillGapAfterPawnMove(int,int);
+	void updatePosition(int,int);
+	void turnLeft();
+
+private:
+	int collumn;
+	int row;
 };
