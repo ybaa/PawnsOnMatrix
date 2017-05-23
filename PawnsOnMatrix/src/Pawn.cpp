@@ -49,14 +49,25 @@ void Pawn::updatePosition(int row, int collumn){
 	this -> collumn = collumn;
 }
 
-void Pawn::turnLeft(){
+void Pawn::turnLeft(int lastCollumn){
 	fillGapAfterPawnMove(row,collumn);
 	if(collumn != 0){
 		collumn -= 1;
 		drawPawn(row,collumn);
 	}
 	else{
-		cout<<"prawo";
+		turnRight(lastCollumn);
+	}
+}
+
+void Pawn::turnRight(int lastCollumn){
+	fillGapAfterPawnMove(row,collumn);
+	if( collumn != lastCollumn){
+		collumn += 1;
+		drawPawn(row,collumn);
+	}
+	else{
+		turnLeft(lastCollumn);
 	}
 }
 

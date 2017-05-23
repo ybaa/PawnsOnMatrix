@@ -11,7 +11,8 @@ public:
 	void drawPawn(int,int);
 	void fillGapAfterPawnMove(int,int);
 	void updatePosition(int,int);
-	void turnLeft();
+	void turnLeft(int);
+	void turnRight(int);
 
 private:
 	int collumn;
