@@ -29,8 +29,6 @@ void Matrix::DrawMatrix(int width, int height){
 		collumn=0;
 	}
 	getch();
-
-
-
+	endwin();
 }
 

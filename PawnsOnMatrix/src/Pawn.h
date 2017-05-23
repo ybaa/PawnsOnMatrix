@@ -5,4 +5,5 @@ public:
 	Pawn();
 	~Pawn();
 	void drawPawn(int,int);
+
 };
