@@ -71,6 +71,28 @@ void Pawn::turnRight(int lastCollumn){
 	}
 }
 
+void Pawn::turnDown(int lastRow){
+	fillGapAfterPawnMove(row,collumn);
+	if(row != lastRow){
+		row += 1;
+		drawPawn(row,collumn);
+	}
+	else{
+		turnUp(lastRow);
+	}
+}
+
+void Pawn::turnUp(int lastRow){
+	fillGapAfterPawnMove(row,collumn);
+	if(row != 0){
+		row -= 1;
+		drawPawn(row,collumn);
+	}
+	else{
+		turnDown(lastRow);
+	}
+}
+
 
 
 

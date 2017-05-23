@@ -74,8 +74,8 @@ int main(){
 
 		sleep(1);
 
-		pawns[0].turnRight(numberOfCollumns-1);
-
+		//pawns[0].turnRight(numberOfCollumns-1);
+		pawns[0].turnUp(numberOfRows-1);
 
 
 	}

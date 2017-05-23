@@ -13,6 +13,8 @@ public:
 	void updatePosition(int,int);
 	void turnLeft(int);
 	void turnRight(int);
+	void turnUp(int);
+	void turnDown(int);
 
 private:
 	int collumn;
