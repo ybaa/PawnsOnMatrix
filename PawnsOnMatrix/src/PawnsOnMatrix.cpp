@@ -7,11 +7,19 @@
 #include <random>
 #include <chrono>
 #include <unistd.h>	//sleep
+#include <thread>
+#include <mutex>
 
 
 using namespace std;
 
-void AddRandomCoordinatesToQueues(vector<int> &X, vector<int> &Y, int numberOfCollumns, int numberOfRows){
+vector<int> XCoordinates;
+vector<int> YCoordinates;
+vector<Pawn> pawns;
+
+void addRandomCoordinatesToQueues(vector<int> *Xx, vector<int> *Yy, int numberOfCollumns, int numberOfRows){
+	vector<int> &X = *Xx;
+	vector<int> &Y = *Yy;
 	mt19937 mt;
 	mt.seed(std::chrono::system_clock::now().time_since_epoch().count());
 	uniform_int_distribution<int> *fixedDist;
@@ -29,13 +37,47 @@ void AddRandomCoordinatesToQueues(vector<int> &X, vector<int> &Y, int numberOfCo
 	delete fixedDist;
 }
 
+void DrawPawnAndMoveOthers(vector<int> *Xx, vector<int> *Yy, int numberOfCollumns, int numberOfRows){
+	vector<int> &X = *Xx;
+	vector<int> &Y = *Yy;
+
+	Pawn p = Pawn();
+	p.drawPawn(Y[0], X[0]);
+	pawns.push_back(p);
+	X.erase(X.begin());
+	Y.erase(Y.begin());
+
+	for(int i = 0; i < pawns.size()-1; i++){
+		random_device rd;
+		mt19937 gen(rd());
+		uniform_int_distribution<int> dis(0,3);
+		int direction = dis(gen);
+
+		switch (direction) {
+			case 0:
+				pawns[i].turnLeft(numberOfCollumns-1);
+				break;
+			case 1:
+				pawns[i].turnUp(numberOfRows-1);
+				break;
+			case 2:
+				pawns[i].turnRight(numberOfCollumns-1);
+				break;
+			case 3:
+				pawns[i].turnDown(numberOfRows-1);
+				break;
+			default:
+				break;
+		}
+	}
+
+	refresh();
+	sleep(3);
+	endwin();
+}
 
 int main(){
-	vector<int> XCoordinates;
-	vector<int> YCoordinates;
-	vector<Pawn> pawns;
-	vector<int> freePlacesRow;
-	vector<vector<int>> freePlaces;				//free place = -1
+	mutex mx;
 
 	//------------------------------- Create Range -------------------------------------------
 	random_device rd;
@@ -49,40 +91,24 @@ int main(){
 	Matrix m;
 	m.DrawMatrix(numberOfCollumns,numberOfRows);
 
-	//------------------------------- Fill matrix of free places-------------------------------
-	for(int i = 0; i < numberOfCollumns; i++){
-		for(int i = 0; i < numberOfRows; i++){
-			freePlacesRow.push_back(-1);
-		}
-		freePlaces.push_back(freePlacesRow);
-	}
 
-	for(int i = 0; i < 5; i++){
-		AddRandomCoordinatesToQueues(XCoordinates,YCoordinates,numberOfCollumns,numberOfRows);
+
+	// how to eliminate this for?
+	for(int i = 0; i < 1; i++){
+		addRandomCoordinatesToQueues(&XCoordinates,&YCoordinates,numberOfCollumns,numberOfRows);
 	}
 
 
-	for(int i = 0; i < 5; i++){
-		Pawn p = Pawn();
-		cout<< p.getCollumn() << " asd " << p.getRow()<<endl;
-		int PawnCollumn = XCoordinates[i];
-		int PawnRow = YCoordinates[i];
-		p.drawPawn(PawnRow,PawnCollumn);
-		pawns.push_back(p);
-		cout<<pawns[i].getCollumn() << " " << pawns[i].getRow()<<endl;
-		refresh();
+	do{
+	thread fillQueues(addRandomCoordinatesToQueues,&XCoordinates,&YCoordinates,numberOfCollumns,numberOfRows);
 
-		sleep(1);
+	mx.lock();
+	fillQueues.join();
+	mx.unlock();
 
-		//pawns[0].turnRight(numberOfCollumns-1);
-		pawns[0].turnUp(numberOfRows-1);
+	thread DrawAndMovePawns(DrawPawnAndMoveOthers, &XCoordinates, &YCoordinates, numberOfCollumns, numberOfRows);
+	DrawAndMovePawns.join();
+	} while(XCoordinates.empty()==false && YCoordinates.empty() ==false);
 
-
-	}
-
-
-
-	getch();
-	endwin();
 	return 0;
 }
