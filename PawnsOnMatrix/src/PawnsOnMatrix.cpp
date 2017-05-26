@@ -42,10 +42,21 @@ void DrawPawnAndMoveOthers(vector<int> *Xx, vector<int> *Yy, int numberOfCollumn
 	vector<int> &Y = *Yy;
 
 	Pawn p = Pawn();
+	bool canDraw = true;
+
+	for(int i = 0; i < pawns.size(); i++){
+		if(pawns[i].getCollumn() == X[0] && pawns[i].getRow() == Y[0])
+			canDraw = false;
+		else
+			canDraw = true;
+	}
+
+	if(canDraw){
 	p.drawPawn(Y[0], X[0]);
 	pawns.push_back(p);
 	X.erase(X.begin());
 	Y.erase(Y.begin());
+	}
 
 	for(int i = 0; i < pawns.size()-1; i++){
 		random_device rd;
@@ -71,6 +82,8 @@ void DrawPawnAndMoveOthers(vector<int> *Xx, vector<int> *Yy, int numberOfCollumn
 		}
 	}
 
+
+
 	refresh();
 	sleep(3);
 	endwin();
@@ -93,13 +106,13 @@ int main(){
 
 
 
-	// how to eliminate this for?
-	for(int i = 0; i < 1; i++){
-		addRandomCoordinatesToQueues(&XCoordinates,&YCoordinates,numberOfCollumns,numberOfRows);
-	}
+	// how to eliminate this for? (important only when I use do while belowe)
+//	for(int i = 0; i < 1; i++){
+//		addRandomCoordinatesToQueues(&XCoordinates,&YCoordinates,numberOfCollumns,numberOfRows);
+//	}
 
-
-	do{
+	for(int i = 0; i < 1000 ; i++){
+	//do{
 	thread fillQueues(addRandomCoordinatesToQueues,&XCoordinates,&YCoordinates,numberOfCollumns,numberOfRows);
 
 	mx.lock();
@@ -108,7 +121,7 @@ int main(){
 
 	thread DrawAndMovePawns(DrawPawnAndMoveOthers, &XCoordinates, &YCoordinates, numberOfCollumns, numberOfRows);
 	DrawAndMovePawns.join();
-	} while(XCoordinates.empty()==false && YCoordinates.empty() ==false);
+	}; //while(XCoordinates.empty()==false && YCoordinates.empty() ==false);
 
 	return 0;
 }
